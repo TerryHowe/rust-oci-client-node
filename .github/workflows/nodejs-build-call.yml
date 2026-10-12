@@ -159,6 +159,12 @@ jobs:
           toolchain: stable
           targets: ${{ matrix.settings.target }}
 
+      - name: Install cargo-auditable
+        uses: taiki-e/install-action@4076c08d76dba979c11a7285295b0716c1d67908 # v2.87.15
+        with:
+          # >=0.7.3: uses -u instead of --undefined, fixing Zig linker (musl builds).
+          tool: cargo-auditable@0.7.7
+
       - name: Cache cargo
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -186,11 +192,16 @@ jobs:
         with:
           tool: cargo-zigbuild@0.23.0
 
+      - name: Compile cargo-auditable wrapper
+        run: rustc scripts/cargo-wrapper.rs -o scripts/cargo-wrapper${{ runner.os == 'Windows' && '.exe' || '' }}
+
       - name: Install dependencies
         run: yarn install --immutable
 
       - name: Build
         run: ${{ matrix.settings.build }}
+        env:
+          CARGO: scripts/cargo-wrapper${{ runner.os == 'Windows' && '.exe' || '' }}
         shell: bash
 
       - name: Upload native binary
