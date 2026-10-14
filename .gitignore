@@ -16,6 +16,10 @@ npm/
 *.d.ts.map
 *.js.map
 
+# Compiled locally / in CI from scripts/cargo-wrapper.rs
+scripts/cargo-wrapper
+scripts/cargo-wrapper.exe
+
 # OS files
 .DS_Store
 Thumbs.db
